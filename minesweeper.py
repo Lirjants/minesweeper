@@ -6,8 +6,13 @@ TODO:
 -resizing (size fixed for now)
 -always 10 mines
 -always 10x10 field
--pictures are working, but numbers missing
-- y, x now working, I think
+-pictures
++ y, x now working, I think
+-statusbar
+- look at QPixmap.swap()
+- location:
+    self.clicked = False -> .click changes, then show_location updates the field
+    loc.x and loc.y to use getters instead
 """
 
 from PyQt6.QtCore import QSize, Qt
@@ -32,63 +37,65 @@ class Color(QWidget):
 class MainWindow(QMainWindow):
     def __init__(self, xmax, ymax, how_many_mines):
         super().__init__()
-        self.icon_size = 14
+        self.icon_size = 28
 
         self.setWindowTitle("Minesweeper")
 
         # game field. Grid (x, y) of Location objects
         self.field = field.Field(xmax, ymax)
 
-        # put mines on field
+        # put mines on field and count numbers
         self.field.set_mines(how_many_mines)
+        self.field.count_numbers()
 
         # Make the grid into a layout
         self.layout = QGridLayout()
         for y in range(ymax):
             for x in range(xmax):
-                # show which ones are mines
-                if self.field.get_object(x, y).get_is_mine():
-                    buttonm = QPushButton()
-                    buttonm.setIcon(QIcon("mine.png"))
-                    # How large is the button (width, height):
-                    buttonm.setFixedSize(QSize(self.icon_size, self.icon_size))
-                    # How large is the picture (width, height):
-                    buttonm.setIconSize(QSize(self.icon_size, self.icon_size))
-                    buttonm.clicked.connect(self.field.get_object(x, y).click)
-                    self.layout.addWidget(buttonm, y, x)
-                    # self.layout.addWidget(Color('red'), y, x)
-                    # print(f"In main - x: {x}, y: {y}")
-                else:
-                    self.layout.addWidget(Color('gray'), y, x)
-        # test
-        # layout.addWidget(Color('blue'), 2, 8)
-        # print("Blue is x: 8, y: 2")
+                buttonm = QPushButton()
+                buttonm.setIcon(QIcon("closed.png"))
+                # How large is the button (width, height):
+                buttonm.setFixedSize(QSize(self.icon_size, self.icon_size))
+                # How large is the picture (width, height):
+                buttonm.setIconSize(QSize(self.icon_size, self.icon_size))
+                buttonm.clicked.connect(
+                    lambda state, x_coord=x, y_coord=y:
+                    self.show_location(self.field.get_object(x_coord, y_coord)))
+                # buttonm.clicked.connect(self.field.get_object(x, y).click)
+                self.layout.addWidget(buttonm, y, x)
 
-        # spaces around locations (3 pixels)
-        self.layout.setSpacing(3)
+        # spaces around locations (2 pixels)
+        self.layout.setSpacing(2)
 
         self.grid = QWidget()
+
         self.grid.setLayout(self.layout)
 
         # Fixed size for now
-        self.setFixedSize(400, 300)
+        self.setFixedSize(600, 450)
 
         # Set the central widget of the Window.
         self.setCentralWidget(self.grid)
 
-    def show_location(self, x, y):
-        loc = self.field.get_object(x, y)
+    def show_location(self, loc):
+        # print(f"x: {loc.x}, y: {loc.y}")
         if loc.get_is_mine():
             self.lose_game()
-        elif loc.get_number() > 0:
-            number_image = QPixmap(f"{loc.get_number()}.png", self.icon_size, self.icon_size)
-            image_label = QLabel()
-            image_label.setPixmap(number_image)
-            self.layout.addWidget(image_label, y, x)
+        # elif loc.get_number() > 0:
+        else:   # placeholder until zero function is added
+            number_image = QPixmap(f"{loc.get_number()}.png")   # get number picture
+            number_image = number_image.scaled(self.icon_size, self.icon_size)  # resize
+            image_label = QLabel()  # make label for widget
+            image_label.setPixmap(number_image)     # put picture in label
+            self.layout.addWidget(image_label, loc.y, loc.x)    # put widget in the grid
             # set layout if needed
-        # elif loc.get_number() == 0:   # show all connecting zeros
+        # else:   # show all connecting zeros
 
     def lose_game(self):
+        # show the whole field
+        print("You lost.")
+
+    def win_game(self):
         pass
 
 

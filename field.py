@@ -32,7 +32,7 @@ class Field:
             if not self.coordlist[y][x].get_is_mine():
                 self.coordlist[y][x].make_mine(True)
                 counter += 1
-                print(f"In field - x: {x}, y: {y}")
+                # print(f"In field - x: {x}, y: {y}")
 
     def click(self, x, y):
         loc = self.coordlist[y][x]
@@ -76,28 +76,6 @@ class Field:
                     if loc.x != self.xmax - 1 and loc.y != self.ymax - 1:    # lower right corner
                         if self.coordlist[loc.y + 1][loc.x + 1].get_is_mine():
                             loc.raise_number()
-                            """
-                else:
-                    # location in the center area, so all directions can be tested
-                    # upper row
-                    if self.coordlist[loc.y - 1][loc.x - 1].get_is_mine():
-                        loc.raise_number()
-                    if self.coordlist[loc.y - 1][loc.x].get_is_mine():
-                        loc.raise_number()
-                    if self.coordlist[loc.y - 1][loc.x + 1].get_is_mine():
-                        loc.raise_number()
-                    # same row
-                    if self.coordlist[loc.y][loc.x - 1].get_is_mine():
-                        loc.raise_number()
-                    if self.coordlist[loc.y][loc.x + 1].get_is_mine():
-                        loc.raise_number()
-                    # lower row
-                    if self.coordlist[loc.y + 1][loc.x - 1].get_is_mine():
-                        loc.raise_number()
-                    if self.coordlist[loc.y + 1][loc.x].get_is_mine():
-                        loc.raise_number()
-                    if self.coordlist[loc.y + 1][loc.x + 1].get_is_mine():
-                        loc.raise_number()"""
 
 
 if __name__ == '__main__':

@@ -7,12 +7,12 @@ TODO:
 -always 10 mines
 -always 10x10 field
 -pictures are working, but numbers missing
--y=x and x=y in coordinate calls annoyingly
+- y, x now working, I think
 """
 
 from PyQt6.QtCore import QSize, Qt
-from PyQt6.QtWidgets import QApplication, QMainWindow, QGridLayout, QWidget, QPushButton, QAbstractButton
-from PyQt6.QtGui import QPalette, QColor, QIcon
+from PyQt6.QtWidgets import QApplication, QMainWindow, QGridLayout, QWidget, QPushButton, QLabel
+from PyQt6.QtGui import QPalette, QColor, QIcon, QPixmap
 import field
 
 
@@ -32,6 +32,7 @@ class Color(QWidget):
 class MainWindow(QMainWindow):
     def __init__(self, xmax, ymax, how_many_mines):
         super().__init__()
+        self.icon_size = 14
 
         self.setWindowTitle("Minesweeper")
 
@@ -42,36 +43,53 @@ class MainWindow(QMainWindow):
         self.field.set_mines(how_many_mines)
 
         # Make the grid into a layout
-        layout = QGridLayout()
+        self.layout = QGridLayout()
         for y in range(ymax):
             for x in range(xmax):
                 # show which ones are mines
                 if self.field.get_object(x, y).get_is_mine():
                     buttonm = QPushButton()
                     buttonm.setIcon(QIcon("mine.png"))
-                    buttonm.setFixedSize(QSize(14, 14))  # How large is the button (width, height)
-                    buttonm.setIconSize(QSize(14, 14))  # How large is the picture (width, height)
+                    # How large is the button (width, height):
+                    buttonm.setFixedSize(QSize(self.icon_size, self.icon_size))
+                    # How large is the picture (width, height):
+                    buttonm.setIconSize(QSize(self.icon_size, self.icon_size))
                     buttonm.clicked.connect(self.field.get_object(x, y).click)
-                    layout.addWidget(buttonm, y, x)
-                    # layout.addWidget(Color('red'), y, x)
+                    self.layout.addWidget(buttonm, y, x)
+                    # self.layout.addWidget(Color('red'), y, x)
                     # print(f"In main - x: {x}, y: {y}")
                 else:
-                    layout.addWidget(Color('gray'), y, x)
+                    self.layout.addWidget(Color('gray'), y, x)
         # test
         # layout.addWidget(Color('blue'), 2, 8)
         # print("Blue is x: 8, y: 2")
 
         # spaces around locations (3 pixels)
-        layout.setSpacing(3)
+        self.layout.setSpacing(3)
 
-        grid = QWidget()
-        grid.setLayout(layout)
+        self.grid = QWidget()
+        self.grid.setLayout(self.layout)
 
         # Fixed size for now
         self.setFixedSize(400, 300)
 
         # Set the central widget of the Window.
-        self.setCentralWidget(grid)
+        self.setCentralWidget(self.grid)
+
+    def show_location(self, x, y):
+        loc = self.field.get_object(x, y)
+        if loc.get_is_mine():
+            self.lose_game()
+        elif loc.get_number() > 0:
+            number_image = QPixmap(f"{loc.get_number()}.png", self.icon_size, self.icon_size)
+            image_label = QLabel()
+            image_label.setPixmap(number_image)
+            self.layout.addWidget(image_label, y, x)
+            # set layout if needed
+        # elif loc.get_number() == 0:   # show all connecting zeros
+
+    def lose_game(self):
+        pass
 
 
 # Application GUI

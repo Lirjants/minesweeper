@@ -34,6 +34,7 @@ class Location:
         self.flag = isflag
 
     def click(self):
+        # print(f"x: {self.x}, y: {self.y}")
         self.clicked = True
 
     def raise_number(self):

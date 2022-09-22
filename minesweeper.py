@@ -81,10 +81,11 @@ class MainWindow(QMainWindow):
 
     def show_location(self, x, y):
         loc = self.field.get_object(x, y)
-        print(f"x: {loc.x}, y: {loc.y}")
+        # print(f"x: {loc.x}, y: {loc.y}")
         if loc.get_clicked():
             return
         if loc.get_is_mine():
+            loc.click()
             self.lose_game()
         else:
             loc.click()
@@ -114,7 +115,10 @@ class MainWindow(QMainWindow):
 
     def lose_game(self):
         # show the whole field
-        print("You lost.")
+        # print("You lost.")
+        for y in range(self.ymax - 1):
+            for x in range(self.xmax - 1):
+                self.show_location(x, y)
 
     def win_game(self):
         pass
@@ -124,7 +128,7 @@ class MainWindow(QMainWindow):
 app = QApplication([])
 
 # first always 10x10 field with 10 mines
-window = MainWindow(15, 20, 10)
+window = MainWindow(15, 20, 25)
 window.show()  # show window.
 
 # execute the app

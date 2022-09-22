@@ -50,7 +50,7 @@ class Field:
                 else:
                     # if location is on the border, index would be out of range
                     # upper row
-                    if loc.x != 0 or loc.y != 0:    # upper left corner
+                    if loc.x != 0 and loc.y != 0:    # upper left corner
                         if self.coordlist[loc.y - 1][loc.x - 1].get_is_mine():
                             loc.raise_number()
                     if loc.y != 0:  # above

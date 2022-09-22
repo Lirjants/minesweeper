@@ -37,6 +37,8 @@ class Color(QWidget):
 class MainWindow(QMainWindow):
     def __init__(self, xmax, ymax, how_many_mines):
         super().__init__()
+        self.xmax = xmax
+        self.ymax = ymax
         self.icon_size = 28
 
         self.setWindowTitle("Minesweeper")
@@ -60,7 +62,7 @@ class MainWindow(QMainWindow):
                 buttonm.setIconSize(QSize(self.icon_size, self.icon_size))
                 buttonm.clicked.connect(
                     lambda state, x_coord=x, y_coord=y:
-                    self.show_location(self.field.get_object(x_coord, y_coord)))
+                    self.show_location(x_coord, y_coord))
                 # buttonm.clicked.connect(self.field.get_object(x, y).click)
                 self.layout.addWidget(buttonm, y, x)
 
@@ -77,19 +79,38 @@ class MainWindow(QMainWindow):
         # Set the central widget of the Window.
         self.setCentralWidget(self.grid)
 
-    def show_location(self, loc):
-        # print(f"x: {loc.x}, y: {loc.y}")
+    def show_location(self, x, y):
+        loc = self.field.get_object(x, y)
+        print(f"x: {loc.x}, y: {loc.y}")
+        if loc.get_clicked():
+            return
         if loc.get_is_mine():
             self.lose_game()
-        # elif loc.get_number() > 0:
-        else:   # placeholder until zero function is added
+        else:
+            loc.click()
             number_image = QPixmap(f"{loc.get_number()}.png")   # get number picture
             number_image = number_image.scaled(self.icon_size, self.icon_size)  # resize
             image_label = QLabel()  # make label for widget
             image_label.setPixmap(number_image)     # put picture in label
             self.layout.addWidget(image_label, loc.y, loc.x)    # put widget in the grid
             # set layout if needed
-        # else:   # show all connecting zeros
+            if loc.get_number() == 0:   # show all connecting zeros
+                if x != 0 and y != 0:   # upper left corner
+                    self.show_location(x - 1, y - 1)
+                if y != 0:  # above
+                    self.show_location(x, y - 1)
+                if x != self.xmax - 1 and y != 0:   # upper right corner
+                    self.show_location(x + 1, y - 1)
+                if x != 0:  # left
+                    self.show_location(x - 1, y)
+                if x != self.xmax - 1:  # right
+                    self.show_location(x + 1, y)
+                if x != 0 and y != self.ymax - 1:   # lower left corner
+                    self.show_location(x - 1, y + 1)
+                if y != self.ymax - 1:  # below
+                    self.show_location(x, y + 1)
+                if y != self.ymax - 1 and x != self.xmax - 1:   # lower right corner
+                    self.show_location(x + 1, y + 1)
 
     def lose_game(self):
         # show the whole field

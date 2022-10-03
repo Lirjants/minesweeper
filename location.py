@@ -28,6 +28,7 @@ class Location:
     # ismine boolean for status. True means that location contains a mine.
     def make_mine(self, ismine):
         self.mine = ismine
+        self.number = 9     # 9 for mines to avoid confusing them with empty spaces
 
     # isflag boolean for whether location contains a flag (True)
     def make_flag(self, isflag):

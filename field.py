@@ -45,7 +45,7 @@ class Field:
         for y in self.coordlist:
             for loc in y:
                 if loc.get_is_mine():
-                    # no need for number
+                    # no need for number. Number is 9 for mines
                     pass
                 else:
                     # if location is on the border, index would be out of range

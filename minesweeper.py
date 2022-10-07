@@ -6,7 +6,7 @@ TODO:
 -resizing (size fixed for now)
 -always 10 mines
 -always 10x10 field
--pictures
+
 + y, x now working, I think
 -statusbar
 - look at QPixmap.swap()
@@ -89,11 +89,7 @@ class MainWindow(QMainWindow):
             self.lose_game()
         else:
             loc.click()
-            number_image = QPixmap(f"{loc.get_number()}.png")   # get number picture
-            number_image = number_image.scaled(self.icon_size, self.icon_size)  # resize
-            image_label = QLabel()  # make label for widget
-            image_label.setPixmap(number_image)     # put picture in label
-            self.layout.addWidget(image_label, loc.y, loc.x)    # put widget in the grid
+            self.show_loc(f"{loc.get_number()}", x, y)
             # set layout if needed
             if loc.get_number() == 0:   # show all connecting zeros
                 if x != 0 and y != 0:   # upper left corner
@@ -113,12 +109,24 @@ class MainWindow(QMainWindow):
                 if y != self.ymax - 1 and x != self.xmax - 1:   # lower right corner
                     self.show_location(x + 1, y + 1)
 
+    def show_loc(self, pic, x, y):
+        loc = self.field.get_object(x, y)
+        number_image = QPixmap(f"{pic}.png")  # get number picture
+        number_image = number_image.scaled(self.icon_size, self.icon_size)  # resize
+        image_label = QLabel()  # make label for widget
+        image_label.setPixmap(number_image)  # put picture in label
+        self.layout.addWidget(image_label, loc.y, loc.x)  # put widget in the grid
+
     def lose_game(self):
         # show the whole field
         # print("You lost.")
-        for y in range(self.ymax - 1):
-            for x in range(self.xmax - 1):
-                self.show_location(x, y)
+        for y in range(self.ymax):
+            for x in range(self.xmax):
+                loc = self.field.get_object(x, y)
+                if loc.get_is_mine():
+                    self.show_loc("mine", x, y)
+                else:
+                    self.show_loc(f"{loc.get_number()}", x, y)
 
     def win_game(self):
         pass
